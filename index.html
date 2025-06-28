@@ -2,21 +2,20 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <title>ジャンプ付きWASDゲーム</title>
+  <title>Undertale風ジャンプゲーム</title>
   <style>
     body {
       margin: 0;
       overflow: hidden;
-      background: #222;
+      background: #000;
     }
     #gameArea {
       position: relative;
       width: 800px;
       height: 600px;
-      margin: 30px auto;
-      background: #444;
+      margin: 20px auto;
+      background: #222;
       border: 3px solid #fff;
-      user-select: none;
     }
     #player {
       position: absolute;
@@ -25,32 +24,46 @@
       background: #0f0;
       border-radius: 8px;
     }
+    #obstacle {
+      position: absolute;
+      width: 200px;
+      height: 10px;
+      background: white;
+      border-radius: 5px;
+      top: 300px;
+      left: 0;
+    }
   </style>
 </head>
 <body>
   <div id="gameArea">
     <div id="player"></div>
+    <div id="obstacle"></div>
   </div>
 
   <script>
-    const player = document.getElementById("player");
     const gameArea = document.getElementById("gameArea");
+    const player = document.getElementById("player");
+    const obstacle = document.getElementById("obstacle");
+
     const speed = 5;
     const gravity = 0.7;
     const jumpPower = 15;
-
-    const keys = { w: false, a: false, s: false, d: false };
-
-    // 初期位置（数値で設定）
-    let posX = 380;
-    let posY = 560;
-    let velocityY = 0;
 
     const playerWidth = 40;
     const playerHeight = 40;
     const groundY = gameArea.clientHeight - playerHeight;
 
-    // キー入力処理
+    let posX = 380;
+    let posY = groundY;
+    let velocityY = 0;
+
+    const keys = { w: false, a: false, s: false, d: false };
+
+    // 障害物
+    let obstacleX = 0;
+    let obstacleSpeed = 4;
+
     window.addEventListener("keydown", (e) => {
       const key = e.key.toLowerCase();
       if (keys.hasOwnProperty(key)) keys[key] = true;
@@ -81,12 +94,34 @@
         velocityY = 0;
       }
 
-      // 左右の壁判定
+      // 壁判定
       posX = Math.min(Math.max(posX, 0), gameArea.clientWidth - playerWidth);
 
-      // 位置更新
+      // 位置反映
       player.style.left = posX + "px";
       player.style.top = posY + "px";
+
+      // 障害物移動（左右往復）
+      obstacleX += obstacleSpeed;
+      if (obstacleX < 0 || obstacleX > gameArea.clientWidth - 200) {
+        obstacleSpeed *= -1;
+      }
+      obstacle.style.left = obstacleX + "px";
+
+      // 衝突判定
+      const playerRect = player.getBoundingClientRect();
+      const obstacleRect = obstacle.getBoundingClientRect();
+
+      if (
+        playerRect.right > obstacleRect.left &&
+        playerRect.left < obstacleRect.right &&
+        playerRect.bottom > obstacleRect.top &&
+        playerRect.top < obstacleRect.bottom
+      ) {
+        alert("💀 GAME OVER!");
+        window.location.reload();
+        return;
+      }
 
       requestAnimationFrame(update);
     }

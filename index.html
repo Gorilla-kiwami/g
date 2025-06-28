@@ -23,8 +23,6 @@
       width: 40px;
       height: 40px;
       background: #0f0;
-      top: 560px; /* 初期は地面にいる想定 */
-      left: 380px;
       border-radius: 8px;
     }
   </style>
@@ -37,33 +35,30 @@
   <script>
     const player = document.getElementById("player");
     const gameArea = document.getElementById("gameArea");
-    const speed = 5;       // 横移動速度
-    const gravity = 0.7;   // 重力加速度
-    const jumpPower = 15;  // ジャンプ初速
+    const speed = 5;
+    const gravity = 0.7;
+    const jumpPower = 15;
 
-    // キー状態
     const keys = { w: false, a: false, s: false, d: false };
 
-    // 位置・速度
-    let posX = parseInt(player.style.left);
-    let posY = parseInt(player.style.top);
-    let velocityY = 0; // 垂直方向の速度
+    // 初期位置（数値で設定）
+    let posX = 380;
+    let posY = 560;
+    let velocityY = 0;
 
-    // 地面の高さ（playerのbottomがgameAreaのbottomに接する位置）
-    const groundY = gameArea.clientHeight - player.clientHeight;
+    const playerWidth = 40;
+    const playerHeight = 40;
+    const groundY = gameArea.clientHeight - playerHeight;
 
+    // キー入力処理
     window.addEventListener("keydown", (e) => {
       const key = e.key.toLowerCase();
-      if (keys.hasOwnProperty(key)) {
-        keys[key] = true;
-      }
+      if (keys.hasOwnProperty(key)) keys[key] = true;
     });
 
     window.addEventListener("keyup", (e) => {
       const key = e.key.toLowerCase();
-      if (keys.hasOwnProperty(key)) {
-        keys[key] = false;
-      }
+      if (keys.hasOwnProperty(key)) keys[key] = false;
     });
 
     function update() {
@@ -71,12 +66,12 @@
       if (keys.a) posX -= speed;
       if (keys.d) posX += speed;
 
-      // ジャンプ（地面にいる時だけ）
+      // ジャンプ
       if (keys.w && posY >= groundY) {
         velocityY = -jumpPower;
       }
 
-      // 重力加算
+      // 重力
       velocityY += gravity;
       posY += velocityY;
 
@@ -86,10 +81,10 @@
         velocityY = 0;
       }
 
-      // 壁判定
-      posX = Math.min(Math.max(posX, 0), gameArea.clientWidth - player.clientWidth);
+      // 左右の壁判定
+      posX = Math.min(Math.max(posX, 0), gameArea.clientWidth - playerWidth);
 
-      // 位置反映
+      // 位置更新
       player.style.left = posX + "px";
       player.style.top = posY + "px";
 

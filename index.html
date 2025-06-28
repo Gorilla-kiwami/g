@@ -52,43 +52,44 @@
   <button onclick="press()">トマトです</button>
 
   <script>
-    let count = 0;
-    const phrases = [
-      "……ちがう……！私はトマトじゃない……！",
-      "でも赤いし丸いよ？",
-      "ほら、やっぱトマトじゃん！",
-      "お前の名前、ケチャップ太郎って聞いたぞ？",
-      "諦めろ、トマトはトマトだ。",
-      "世界は君をトマトとして受け入れた。",
-      "ナスが迫ってくる…！",
-      "ナスが支配した。",
-      "トマトォォォォ！！！！！！（絶叫）"
-    ];
+  let count = 0;
+  const phrases = [
+    "……ちがう……！私はトマトじゃない……！",
+    "でも赤いし丸いよ？",
+    "ほら、やっぱトマトじゃん！",
+    "お前の名前、ケチャップ太郎って聞いたぞ？",
+    "諦めろ、トマトはトマトだ。",
+    "世界は君をトマトとして受け入れた。",
+    "ナスが迫ってくる…！",
+    "ナスが支配した。",
+    "トマトォォォォ！！！！！！（絶叫）"
+  ];
 
-    function press() {
-      // メッセージ更新
-      document.getElementById("msg").textContent = phrases[Math.min(count, phrases.length - 1)];
+  function press() {
+    // メッセージ更新
+    document.getElementById("msg").textContent = phrases[Math.min(count, phrases.length - 1)];
 
-      // トマトSE再生
-      const audio = new SpeechSynthesisUtterance("トマト！");
-      audio.pitch = 2;
-      audio.rate = 1.5;
-      speechSynthesis.speak(audio);
+    // トマトSE再生（渋滞防止）
+    speechSynthesis.cancel(); // ← これで前の音を止める！
+    const audio = new SpeechSynthesisUtterance("トマト！");
+    audio.pitch = 2;
+    audio.rate = 1.5;
+    speechSynthesis.speak(audio);
 
-      // ナス出現
-      const nasu = document.createElement("div");
-      nasu.classList.add("nasu");
-      nasu.style.left = Math.random() * window.innerWidth + "px";
-      nasu.style.top = Math.random() * window.innerHeight + "px";
-      document.body.appendChild(nasu);
+    // ナス出現
+    const nasu = document.createElement("div");
+    nasu.classList.add("nasu");
+    nasu.style.left = Math.random() * window.innerWidth + "px";
+    nasu.style.top = Math.random() * window.innerHeight + "px";
+    document.body.appendChild(nasu);
 
-      // 背景ナス色に染める
-      if (count >= 7) {
-        document.body.style.background = "repeating-linear-gradient(45deg, purple, darkviolet 10px)";
-      }
-
-      count++;
+    // 背景ナス色に染める
+    if (count >= 7) {
+      document.body.style.background = "repeating-linear-gradient(45deg, purple, darkviolet 10px)";
     }
-  </script>
+
+    count++;
+  }
+</script>
 </body>
 </html>

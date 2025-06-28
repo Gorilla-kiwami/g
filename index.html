@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>わたしはトマトじゃない</title>
+  <style>
+    body {
+      background: radial-gradient(circle at center, #ffcccc, #ff0000);
+      color: white;
+      font-family: 'Comic Sans MS', sans-serif;
+      text-align: center;
+      padding-top: 100px;
+    }
+    h1 {
+      font-size: 3em;
+    }
+    #msg {
+      font-size: 1.5em;
+      margin: 20px;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 15px 30px;
+      background: white;
+      color: red;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #ff0000;
+    }
+    button:hover {
+      background: pink;
+    }
+  </style>
+</head>
+<body>
+  <h1>わたしはトマトじゃない</h1>
+  <div id="msg">みんながあなたをトマトと呼んでいます。</div>
+  <button onclick="press()">トマトです</button>
+
+  <script>
+    let count = 0;
+    const phrases = [
+      "……ちがう……！私はトマトじゃない……！",
+      "でも赤いし丸いよ？",
+      "ほら、やっぱトマトじゃん！",
+      "お前の名前、ケチャップ太郎って聞いたぞ？",
+      "諦めろ、トマトはトマトだ。",
+      "世界は君をトマトとして受け入れた。",
+      "トマトです",
+      "ゲームクリア：あなたはついにトマトになった。"
+    ];
+
+    function press() {
+      document.getElementById("msg").textContent = phrases[Math.min(count, phrases.length - 1)];
+      count++;
+    }
+  </script>
+</body>
+</html>

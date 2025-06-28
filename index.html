@@ -1,95 +1,102 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>わたしはトマトじゃない</title>
+  <meta charset="UTF-8" />
+  <title>ジャンプ付きWASDゲーム</title>
   <style>
     body {
-      background: radial-gradient(circle at center, #ffcccc, #ff0000);
-      color: white;
-      font-family: 'Comic Sans MS', sans-serif;
-      text-align: center;
-      overflow: hidden;
       margin: 0;
-      padding: 0;
+      overflow: hidden;
+      background: #222;
     }
-    h1 {
-      font-size: 3em;
-      margin-top: 50px;
+    #gameArea {
+      position: relative;
+      width: 800px;
+      height: 600px;
+      margin: 30px auto;
+      background: #444;
+      border: 3px solid #fff;
+      user-select: none;
     }
-    #msg {
-      font-size: 1.5em;
-      margin: 20px;
-    }
-    button {
-      font-size: 1.2em;
-      padding: 15px 30px;
-      background: white;
-      color: red;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      box-shadow: 0 0 10px #ff0000;
-    }
-    button:hover {
-      background: pink;
-    }
-    .nasu {
+    #player {
       position: absolute;
-      width: 60px;
-      height: 60px;
-      background: purple;
-      border-radius: 50% 50% 40% 40%;
-      transform: rotate(45deg);
-      z-index: 0;
-      opacity: 0.7;
+      width: 40px;
+      height: 40px;
+      background: #0f0;
+      top: 560px; /* 初期は地面にいる想定 */
+      left: 380px;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <h1>わたしはトマトじゃない</h1>
-  <div id="msg">みんながあなたをトマトと呼んでいます。</div>
-  <button onclick="press()">トマトです</button>
+  <div id="gameArea">
+    <div id="player"></div>
+  </div>
 
   <script>
-  let count = 0;
-  const phrases = [
-    "……ちがう……！私はトマトじゃない……！",
-    "でも赤いし丸いよ？",
-    "ほら、やっぱトマトじゃん！",
-    "お前の名前、ケチャップ太郎って聞いたぞ？",
-    "諦めろ、トマトはトマトだ。",
-    "世界は君をトマトとして受け入れた。",
-    "ナスが迫ってくる…！",
-    "ナスが支配した。",
-    "トマトォォォォ！！！！！！（絶叫）"
-  ];
+    const player = document.getElementById("player");
+    const gameArea = document.getElementById("gameArea");
+    const speed = 5;       // 横移動速度
+    const gravity = 0.7;   // 重力加速度
+    const jumpPower = 15;  // ジャンプ初速
 
-  function press() {
-    // メッセージ更新
-    document.getElementById("msg").textContent = phrases[Math.min(count, phrases.length - 1)];
+    // キー状態
+    const keys = { w: false, a: false, s: false, d: false };
 
-    // トマトSE再生（渋滞防止）
-    speechSynthesis.cancel(); // ← これで前の音を止める！
-    const audio = new SpeechSynthesisUtterance("トマト！");
-    audio.pitch = 2;
-    audio.rate = 1.5;
-    speechSynthesis.speak(audio);
+    // 位置・速度
+    let posX = parseInt(player.style.left);
+    let posY = parseInt(player.style.top);
+    let velocityY = 0; // 垂直方向の速度
 
-    // ナス出現
-    const nasu = document.createElement("div");
-    nasu.classList.add("nasu");
-    nasu.style.left = Math.random() * window.innerWidth + "px";
-    nasu.style.top = Math.random() * window.innerHeight + "px";
-    document.body.appendChild(nasu);
+    // 地面の高さ（playerのbottomがgameAreaのbottomに接する位置）
+    const groundY = gameArea.clientHeight - player.clientHeight;
 
-    // 背景ナス色に染める
-    if (count >= 7) {
-      document.body.style.background = "repeating-linear-gradient(45deg, purple, darkviolet 10px)";
+    window.addEventListener("keydown", (e) => {
+      const key = e.key.toLowerCase();
+      if (keys.hasOwnProperty(key)) {
+        keys[key] = true;
+      }
+    });
+
+    window.addEventListener("keyup", (e) => {
+      const key = e.key.toLowerCase();
+      if (keys.hasOwnProperty(key)) {
+        keys[key] = false;
+      }
+    });
+
+    function update() {
+      // 横移動
+      if (keys.a) posX -= speed;
+      if (keys.d) posX += speed;
+
+      // ジャンプ（地面にいる時だけ）
+      if (keys.w && posY >= groundY) {
+        velocityY = -jumpPower;
+      }
+
+      // 重力加算
+      velocityY += gravity;
+      posY += velocityY;
+
+      // 地面判定
+      if (posY > groundY) {
+        posY = groundY;
+        velocityY = 0;
+      }
+
+      // 壁判定
+      posX = Math.min(Math.max(posX, 0), gameArea.clientWidth - player.clientWidth);
+
+      // 位置反映
+      player.style.left = posX + "px";
+      player.style.top = posY + "px";
+
+      requestAnimationFrame(update);
     }
 
-    count++;
-  }
-</script>
+    update();
+  </script>
 </body>
 </html>
